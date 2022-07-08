@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify;
+import json;
 from flask_cors import CORS, cross_origin;
 
 import httplib2
@@ -15,7 +16,7 @@ from oauth2client.file import Storage
 from oauth2client.tools import argparser, run_flow
 
 
-output = "Succesfully Uploaded"
+output = ""
 vidloc = ""
 # Explicitly tell the underlying HTTP transport library not to retry, since
 # we are handling retry logic ourselves.
@@ -126,6 +127,7 @@ def resumable_upload(insert_request):
       if response is not None:
         if 'id' in response:
           print("Video id '%s' was successfully uploaded." % response['id'])
+          global output
           output = response['id']
           print(output)
         else:
@@ -151,6 +153,7 @@ def resumable_upload(insert_request):
       time.sleep(sleep_seconds)
 
 
+vidtitle = ""
 
 
 
@@ -158,46 +161,60 @@ def resumable_upload(insert_request):
 app = Flask(__name__)
 cors = CORS(app)
 
-@app.route('/api', methods = ['GET'])
+@app.route('/api', methods = ['GET', 'POST'])
 @cross_origin()
 
 def uploadvideoyt():
-    #dic = dictionary 
-    dic = {}
-    filelocation = request.args['query']
-    strfilelocation = str(filelocation)
 
-    vidloc = "C:\\Users\\asuto\Desktop\\"+strfilelocation
+    global vidtitle
 
-    file = vidloc
-    title = "Hello World Video 1 Day 2"
-    description = """This is the new video 3 multiline descrption guys.
-    I belive here I can add chapters as well.
-    Here are my youtube chapters
-    Like Comment and Suscribe Guys!
-    ---**--**--**--
-    00:00 - Intro
-    00:20 - Outro
-    It is the most popular site for Python programmers."""
-    category = "22"
-    keywords = "youtube api, hello world, like, comment, day2Video"
-    privacyStatus = VALID_PRIVACY_STATUSES[0]
-
-    dicyt = {"file":file, "title":title, "description":description, "category":category, "keywords":keywords, "privacyStatus":privacyStatus}
+    if(request.method == 'POST'):
+      dictonary = {}
+      request_data = request.data
+      request_data = json.loads(request_data.decode('utf-8'))
+      videotitle = request_data["title"]
+      vidtitle = videotitle
+      dictonary["title"] = vidtitle
+      return dictonary
     
-    if not os.path.exists(dicyt["file"]):
-        exit("Please specify a valid file using the --file= parameter.")
+    else:
 
-    youtube = get_authenticated_service(dicyt)
-    try:
-        initialize_upload(youtube, dicyt)
-    except HttpError as e:
-        print("An HTTP error %d occurred:\n%s" % (e.resp.status, e.content))
-    
+      #dic = dictionary 
+      dic = {}
+      filelocation = request.args['query']
+      strfilelocation = str(filelocation)
 
-    dic["loction"] = vidloc
-    dic["output"] = output
-    return dic
+      vidloc = "C:\\Users\\asuto\Desktop\\"+strfilelocation
+
+      file = vidloc
+      title = "Hello World Video 1 Day 2"
+      description = """This is the new video 3 multiline descrption guys.
+      I belive here I can add chapters as well.
+      Here are my youtube chapters
+      Like Comment and Suscribe Guys!
+      ---**--**--**--
+      00:00 - Intro
+      00:20 - Outro
+      It is the most popular site for Python programmers."""
+      category = "22"
+      keywords = "youtube api, hello world, like, comment, day2Video"
+      privacyStatus = VALID_PRIVACY_STATUSES[0]
+
+      dicyt = {"file":file, "title":title, "description":description, "category":category, "keywords":keywords, "privacyStatus":privacyStatus}
+      
+      if not os.path.exists(dicyt["file"]):
+          exit("Please specify a valid file using the --file= parameter.")
+
+      youtube = get_authenticated_service(dicyt)
+      try:
+          initialize_upload(youtube, dicyt)
+      except HttpError as e:
+          print("An HTTP error %d occurred:\n%s" % (e.resp.status, e.content))
+      
+
+      dic["loction"] = vidloc
+      dic["output"] = output
+      return dic
 
 if __name__ == "__main__":
     app.run()
