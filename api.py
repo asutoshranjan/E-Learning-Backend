@@ -158,6 +158,7 @@ viddescription = ""
 vidcategory = ""
 vidkeywords = ""
 vidprivacyStatus = ""
+vidthumbnail = ""
 
 
 
@@ -176,6 +177,7 @@ def uploadvideoyt():
     global vidcategory
     global vidkeywords
     global vidprivacyStatus
+    global vidthumbnail
 
     if(request.method == 'POST'):
       dictonary = {}
@@ -186,16 +188,19 @@ def uploadvideoyt():
       videocategory = request_data["category"]
       videokeywords = request_data["keywords"]
       videoprivacyStatus = request_data["privacyStatus"]
+      videothumbnail = request_data["thumbnai"]
       vidtitle = videotitle
       viddescription = videodescription
       vidcategory = videocategory
       vidkeywords = videokeywords
       vidprivacyStatus = videoprivacyStatus
+      vidthumbnail = videothumbnail
       dictonary["title"] = vidtitle
       dictonary["description"] = viddescription
       dictonary["category"] = vidcategory
       dictonary["keywords"] = vidkeywords
       dictonary["privacyStatus"] = vidprivacyStatus
+      dictonary["thumbnail"] = vidthumbnail
       return dictonary
     
     else:
@@ -245,13 +250,23 @@ def uploadvideoyt():
           print("An HTTP error %d occurred:\n%s" % (e.resp.status, e.content))
       
 
+      thumbnailrequest = youtube.thumbnails().set(
+        videoId = output,
+        media_body=MediaFileUpload(vidthumbnail)
+      )
+
+      thumbnailresponce = thumbnailrequest.execute()
+      print(thumbnailresponce)
+      
+
       dic["loction"] = vidloc
-      dic["VideoOutput"] = output
+      dic["VideoID"] = output
       dic["title"] = title
       dic["description"] = description
       dic["category"] = category
       dic["keywords"] = keywords
       dic["privacyStatus"] = privacyStatus
+      dic["thumbnail"] = vidthumbnail
       return dic
 
 if __name__ == "__main__":
