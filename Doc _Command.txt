@@ -1,0 +1,14 @@
+Set Up:
+create a python virtualenv
+Install these packages:
+
+pip install --upgrade google-api-python-client
+pip install --upgrade google-auth-oauthlib google-auth-httplib2
+pip install flask
+pip install flask-cors
+pip install oauth2client
+
+Also You will be needing the client_secrets.json file which has the auth credentials
+
+Sample Upload Command:
+python upload_video.py --file="C:\Users\asuto\Desktop\Video1.mp4" --title="Hello World Video 1" --description="Uploading Through a CLA This IS my First Video" --keywords="youtube api, hello world, like, comment" --category="22" --privacyStatus="private"
